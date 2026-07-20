@@ -126,6 +126,27 @@
   .qty-btn:disabled{color:var(--muted);cursor:not-allowed}
   .qty-value{width:40px;text-align:center;font-size:14px;font-weight:600;}
 
+  /* Warning Animation */
+  .ticket-warning{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    font-weight:800;
+    color:#d32f2f;
+    background:#ffebee;
+    border:1px solid #ffcdd2;
+    padding:10px;
+    border-radius:6px;
+    letter-spacing:1px;
+    animation:pulse-warning 1.5s infinite;
+  }
+
+  @keyframes pulse-warning {
+    0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.4); }
+    50% { transform: scale(1.02); opacity: 0.9; background-color: #ffcdd2; color: #b71c1c; box-shadow: 0 0 0 5px rgba(211, 47, 47, 0); }
+    100% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
+  }
+
   /* Footer */
   .footer{background:var(--white);border-top:1px solid var(--line);padding:40px 20px;margin-top:40px;text-align:center}
   .footer-logo{font-family:'Helvetica Neue',Arial,sans-serif;font-weight:900;font-size:28px;color:var(--primary);letter-spacing:-1px;margin-bottom:10px;display:inline-block}
@@ -281,6 +302,11 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Animasi Tersisa Tiket -->
+    <div class="ticket-warning">
+      ⚠️ TERSISA 9 TIKET
     </div>
 
   </div>
