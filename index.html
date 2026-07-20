@@ -31,16 +31,6 @@
     display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-soft);
     cursor:pointer;padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--white);
   }
-  .lang-selector:hover{border-color:#ccc}
-  .lang-menu{
-    position:absolute;top:50px;right:20px;background:var(--white);
-    border:1px solid var(--line);border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,0.08);
-    min-width:120px;z-index:200;display:none;
-  }
-  .lang-menu.show{display:block}
-  .lang-menu div{padding:10px 14px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--line)}
-  .lang-menu div:last-child{border-bottom:none}
-  .lang-menu div:hover{background:var(--bg)}
   .user-icon{
     width:36px;height:36px;border:1px solid var(--line);border-radius:50%;
     display:grid;place-items:center;color:var(--ink-soft);cursor:pointer;background:var(--white);
@@ -55,9 +45,8 @@
     font-weight:600;font-size:13px;background:#eee;color:var(--muted);transition:all .2s;
   }
   .step.active .step-num{background:var(--primary);color:var(--white)}
-  .step.done .step-num{background:var(--success);color:var(--white)}
   .step-label{font-size:13px;color:var(--muted);font-weight:500;white-space:nowrap}
-  .step.active .step-label,.step.done .step-label{color:var(--ink);font-weight:600}
+  .step.active .step-label{color:var(--ink);font-weight:600}
   .step-divider{width:28px;height:1px;background:var(--line);margin:0 4px;flex-shrink:0}
   @media(max-width:640px){.step-label{display:none}.step-divider{width:14px}}
 
@@ -344,23 +333,6 @@
     window._toastT = setTimeout(() => t.classList.remove('show'), 2200);
   }
 
-  // Language selector
-  const langBtn = document.getElementById('langBtn');
-  const langMenu = document.getElementById('langMenu');
-  langBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    langMenu.classList.toggle('show');
-  });
-  langMenu.querySelectorAll('div').forEach(opt => {
-    opt.addEventListener('click', () => {
-      const lang = opt.dataset.lang;
-      langBtn.querySelector('span').textContent = lang;
-      langMenu.classList.remove('show');
-      showToast(lang === 'EN' ? 'Language switched to English' : 'Bahasa diubah ke Indonesia');
-    });
-  });
-  document.addEventListener('click', () => langMenu.classList.remove('show'));
-
   // Ticket Quantity Control
   const card = document.querySelector('.ticket-card');
   const price = parseInt(card.dataset.price);
@@ -401,6 +373,15 @@
   // Redirect to form.html on checkout
   checkoutBtn.addEventListener('click', () => {
     if (qty > 0) {
+      // SIMPAN DATA TIKET KE LOCAL STORAGE AGAR BISA DIBACA DI FORM.HTML
+      const items = [
+        { nama: 'Penambahan Tiket - Latihan Pestapora Makassar', qty: qty, harga: price }
+      ];
+      localStorage.setItem('checkout_items', JSON.stringify(items));
+      localStorage.setItem('totalPembayaran', qty * price);
+      localStorage.setItem('jumlahTiket', qty);
+      
+      // REDIRECT KE FORM.HTML
       window.location.href = 'form.html';
     } else {
       showToast('Silakan pilih jumlah tiket terlebih dahulu');
