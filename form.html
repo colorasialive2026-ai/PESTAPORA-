@@ -10,7 +10,7 @@
     --primary: #E6007E; --primary-dark: #C5006E; --primary-light: #FFE5F1;
     --primary-glow: rgba(230, 0, 126, 0.15); --bg-main: #f7f7f8; --card-bg: #FFFFFF;
     --card-border: #e8e8e8; --text-main: #1a1a1a; --text-muted: #8a8a8a; --error: #EF4444;
-    --btn-blue: #005ce6; /* Menyesuaikan tombol biru dari index.html */
+    --btn-blue: #005ce6;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif; }
   body { background: var(--bg-main); color: var(--text-main); padding-bottom: 120px; overflow-x: hidden; -webkit-font-smoothing:antialiased; }
@@ -189,13 +189,12 @@
 
 <div id="loading" class="loading-overlay">
   <div class="spinner-box"><div class="spinner"></div></div>
-  <div class="loading-text">Memproses Pesanan...</div>
+  <div class="loading-text">Menyiapkan Halaman Pembayaran...</div>
   <div class="loading-sub">Mohon tunggu sebentar</div>
 </div>
 
 <script>
   // Ambil data dari halaman sebelumnya (index.html)
-  // Pastikan di index.html Anda menambahkan kode localStorage saat klik "Beli Tiket Sekarang"
   const items = JSON.parse(localStorage.getItem('checkout_items') || '[]');
   const total = Number(localStorage.getItem('totalPembayaran') || 0);
   const jumlahTiket = Number(localStorage.getItem('jumlahTiket') || 0);
@@ -247,7 +246,7 @@
     el.addEventListener('change', saveDraft);
   });
 
-  lanjutBtn.onclick = async function() {
+  lanjutBtn.onclick = function() {
     const wajib = [namaEl, identitasEl, nomorIdEl, emailEl, waEl, alamatEl];
     let isValid = true;
     wajib.forEach(field => field.classList.remove('error'));
@@ -259,6 +258,7 @@
       }
     }
 
+    // Jika ada form yang kosong, berhenti
     if (!isValid) {
       alert('Mohon lengkapi semua data wajib (berwarna merah).');
       const firstError = document.querySelector('.error');
@@ -266,15 +266,18 @@
       return;
     }
 
+    // Jika checkbox belum dicentang, berhenti
     if (!setuju1El.checked || !setuju2El.checked) {
       alert('Harap centang seluruh kotak persetujuan.');
       return;
     }
 
-    lanjutBtn.disabled = true;
-    lanjutBtn.innerHTML = '<div class="spinner" style="width:20px;height:20px;border-width:3px;margin:0;"></div> Memproses...';
+    // Tampilkan loading screen
     loadingEl.classList.add('active');
+    lanjutBtn.disabled = true;
+    lanjutBtn.innerText = 'Memproses...';
 
+    // Simpan data pemesan ke LocalStorage untuk dipakai di qris.html
     const etatixOrder = {
       nama: namaEl.value, wa: waEl.value, email: emailEl.value,
       identitas: identitasEl.value, nomorId: nomorIdEl.value, alamat: alamatEl.value,
@@ -283,29 +286,23 @@
         totalQty: jumlahTiket, totalPrice: total
       }
     };
-
     localStorage.setItem('etatix_order', JSON.stringify(etatixOrder));
     localStorage.setItem('nama', namaEl.value);
     localStorage.setItem('wa', waEl.value);
 
-    try {
-      await fetch('https://formspree.io/f/mojojdpl', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          nama: namaEl.value, identitas: identitasEl.value, nomor_id: nomorIdEl.value,
-          email: emailEl.value, whatsapp: waEl.value, alamat: alamatEl.value,
-          jenis_tiket: jenis, jumlah_tiket: jumlahTiket, total_bayar: total
-        })
-      });
-    } catch (e) {
-      console.log('Formspree error:', e);
-    }
+    // Kirim data ke Formspree secara diam-diam (tanpa menunggu respon agar redirect langsung terjadi)
+    fetch('https://formspree.io/f/mojojdpl', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        nama: namaEl.value, identitas: identitasEl.value, nomor_id: nomorIdEl.value,
+        email: emailEl.value, whatsapp: waEl.value, alamat: alamatEl.value,
+        jenis_tiket: jenis, jumlah_tiket: jumlahTiket, total_bayar: total
+      })
+    }).catch(e => console.log('Formspree error:', e));
 
-    // Redirect ke qris.html
-    setTimeout(() => {
-      window.location.href = 'qris.html';
-    }, 1500);
+    // Langsung redirect ke qris.html
+    window.location.href = 'qris.html';
   };
 </script>
 </body>
