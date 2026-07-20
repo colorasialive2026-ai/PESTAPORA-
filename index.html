@@ -194,10 +194,6 @@
         <span>ID</span>
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
-      <div class="lang-menu" id="langMenu">
-        <div data-lang="ID">🇮🇩 Indonesia</div>
-        <div data-lang="EN">🇬🇧 English</div>
-      </div>
       <div class="user-icon" title="Masuk ke akun">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       </div>
@@ -370,19 +366,17 @@
     }
   });
 
-  // Redirect to form.html on checkout
+  // Redirect to form.html on checkout using URL Parameters
   checkoutBtn.addEventListener('click', () => {
     if (qty > 0) {
-      // SIMPAN DATA TIKET KE LOCAL STORAGE AGAR BISA DIBACA DI FORM.HTML
-      const items = [
-        { nama: 'Penambahan Tiket - Latihan Pestapora Makassar', qty: qty, harga: price }
-      ];
-      localStorage.setItem('checkout_items', JSON.stringify(items));
-      localStorage.setItem('totalPembayaran', qty * price);
-      localStorage.setItem('jumlahTiket', qty);
+      const params = new URLSearchParams({
+        nama: 'Penambahan Tiket - Latihan Pestapora Makassar',
+        qty: qty,
+        harga: price,
+        total: qty * price
+      });
       
-      // REDIRECT KE FORM.HTML
-      window.location.href = 'form.html';
+      window.location.href = 'form.html?' + params.toString();
     } else {
       showToast('Silakan pilih jumlah tiket terlebih dahulu');
     }
