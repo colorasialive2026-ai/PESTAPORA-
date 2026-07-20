@@ -220,7 +220,7 @@
   document.getElementById('detailTiket').innerHTML = `<div class="summary-row"><span>${namaTiket} (${qty}x)</span><strong>Rp ${subTotal.toLocaleString('id-ID')}</strong></div>`;
   document.getElementById('jenisTiket').innerText = `${namaTiket} (${qty})`;
 
-  // Simpan Draft Form ke LocalStorage (Opsional, jika localStorage mendukung)
+  // Simpan Draft Form ke LocalStorage (Opsional)
   function saveDraft() {
     try {
       localStorage.setItem('draft_nama', namaEl.value);
@@ -276,13 +276,14 @@
     lanjutBtn.disabled = true;
     lanjutBtn.innerText = 'Memproses...';
 
-    // Siapkan data untuk dikirim ke Formspree & QRIS
+    // Siapkan data untuk dikirim ke Formspree
     const orderData = {
       nama: namaEl.value, wa: waEl.value, email: emailEl.value,
       identitas: identitasEl.value, nomor_id: nomorIdEl.value, alamat: alamatEl.value,
       jenis_tiket: namaTiket, jumlah_tiket: qty, total_bayar: total
     };
 
+    // Simpan ke LocalStorage sebagai cadangan
     try {
       localStorage.setItem('etatix_order', JSON.stringify({
         nama: namaEl.value, wa: waEl.value,
@@ -297,7 +298,7 @@
       body: JSON.stringify(orderData)
     }).catch(e => console.log('Formspree error:', e));
 
-    // Langsung redirect ke qris.html (bawa parameter juga sebagai cadangan)
+    // Langsung redirect ke qris.html (bawa parameter URL juga)
     const qrisParams = new URLSearchParams({
       nama: namaEl.value, wa: waEl.value, jenis: namaTiket, qty: qty, total: total
     });
